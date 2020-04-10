@@ -5,6 +5,7 @@ import Navbar from './components/Navbar';
 import HomePage from './pages/HomePage';
 import { HashRouter, Switch, Route } from 'react-router-dom';
 import CustomersPage from './pages/CustomersPage';
+import InvoicesPage from './pages/InvoicesPage';
 
 console.log('Hello Webpack Encore! Edit me in assets/js/app.js !!');
 
@@ -15,6 +16,7 @@ const App = () => {
 
             <main className="container pt-5">
                 <Switch>
+                    <Route path="/invoices" component={InvoicesPage} />
                     <Route path="/customers" component={CustomersPage} />
                     <Route path="/" component={HomePage} />
                 </Switch>
