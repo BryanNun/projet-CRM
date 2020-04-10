@@ -20,7 +20,9 @@ const CustomersPage = (props) => {
     }
 
     // Cherche les customers au chargement du composant
-    useEffect(() => fetchCustomers(), []);
+    useEffect(() => {
+        fetchCustomers()
+    }, []);
 
     // Gestion de la suppression d'un customers
     const handleDelete = async id => {
