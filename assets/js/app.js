@@ -10,6 +10,9 @@ import LoginPage from './pages/LoginPage';
 import AuthAPI from './services/authAPI';
 import AuthContext from "./contexts/AuthContext";
 import PrivateRoute from './components/PrivatedRoute';
+import CustomerPage from './pages/CustomerPage';
+import InvoicePage from './pages/InvoicePage';
+import RegisterPage from './pages/RegisterPage';
 
 // On apport le CSS personalisé
 require("../css/app.css");
@@ -34,7 +37,11 @@ const App = () => {
 
                 <main className="container pt-5">
                     <Switch>
+
                         <Route path="/login" component={LoginPage} />
+                        <Route path="/register" component={RegisterPage} />
+                        <PrivateRoute path="/invoices/:id" component={InvoicePage} />
+                        <PrivateRoute path="/customers/:id" component={CustomerPage} />
                         <PrivateRoute path="/invoices" component={InvoicesPage} />
                         <PrivateRoute path="/customers" component={CustomersPage} />
                         <Route path="/" component={HomePage} />
