@@ -4,6 +4,7 @@ import Pagination from '../components/Pagination';
 import InvoicesAPI from "../services/invoicesAPI";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
+import TableLoader from '../components/loaders/TableLoader';
 
 
 const STATUS_CLASSES = {
@@ -23,6 +24,7 @@ const InvoicesPage = (props) => {
     const [invoices, setInvoices] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [search, setSearch] = useState('');
+    const [loading, setLoading] = useState(true);
     // nombre d'items par page
     const itemsPerPage = 10;
 
@@ -31,6 +33,7 @@ const InvoicesPage = (props) => {
         try {
             const data = await InvoicesAPI.findAll();
             setInvoices(data);
+            setLoading(false);
         } catch (error) {
             console.log(error.response);
             toast.error("Erreur lors du chargement des factures");
@@ -89,18 +92,18 @@ const InvoicesPage = (props) => {
 
     return (
         <>
-        <div className="d-flex justify-content-between align-items-center">
-            <h1>Liste des factures</h1>
-            <Link className="btn btn-primary" to="/invoices/new/">
-                Créer une facture
+            <div className="d-flex justify-content-between align-items-center">
+                <h1>Liste des factures</h1>
+                <Link className="btn btn-primary" to="/invoices/new/">
+                    Créer une facture
             </Link>
-        </div>
+            </div>
 
             <div className="form-group">
                 <input type="text" onChange={handleSearch} value={search} className="form-control" placeholder="Rechercher ..." />
             </div>
 
-            <table className="table table-hover">
+            {!loading && <table className="table table-hover">
                 <thead>
                     <tr>
                         <th>Numéro</th>
@@ -116,7 +119,9 @@ const InvoicesPage = (props) => {
                         <tr key={invoice.id}>
                             <td>{invoice.chrono}</td>
                             <td>
-                                <a href="#">{invoice.customer.firstName} {invoice.customer.lastName}</a>
+                                <Link to={"/customers/" + invoice.customer.id}>
+                                    {invoice.customer.firstName} {invoice.customer.lastName}
+                                </Link>
                             </td>
                             <td className="text-center">{formatDate(invoice.sentAt)}</td>
                             <td className="text-center">
@@ -124,14 +129,14 @@ const InvoicesPage = (props) => {
                             </td>
                             <td className="text-center">{invoice.amount.toLocaleString()} €</td>
                             <td>
-                                <Link to={"/invoices/" + invoice.id}className="btn btn-sm btn-primary mr-1">Editer</Link>
+                                <Link to={"/invoices/" + invoice.id} className="btn btn-sm btn-primary mr-1">Editer</Link>
                                 <button className="btn btn-sm btn-danger" onClick={() => handleDelete(invoice.id)}>Supprimer</button>
                             </td>
                         </tr>
                     )}
                 </tbody>
-            </table>
-
+            </table>}
+            {loading && <TableLoader />}
             <Pagination
                 currentPage={currentPage}
                 itemsPerPage={itemsPerPage}

@@ -3,6 +3,7 @@ import Field from '../components/forms/Field';
 import { Link } from "react-router-dom";
 import CustomersAPI from "../services/customersAPI";
 import { toast } from 'react-toastify';
+import FormContentLoader from '../components/loaders/FormContentLoader';
 
 const CustomerPage = ({ match, history }) => {
 
@@ -20,6 +21,7 @@ const CustomerPage = ({ match, history }) => {
         firstName: "",
         email: ""
     })
+    const [loading, setLoading] = useState(false);
 
     const [editing, setEditing] = useState(false);
 
@@ -27,8 +29,8 @@ const CustomerPage = ({ match, history }) => {
     const fetchCustomer = async id => {
         try {
             const { firstName, lastName, email, company } = await CustomersAPI.find(id);
-
             setCustomer({ firstName, lastName, email, company });
+            setLoading(false);
         } catch (error) {
             toast.error("Impossible de charger le client");
             history.replace('/cutomers');
@@ -38,6 +40,7 @@ const CustomerPage = ({ match, history }) => {
     // Charge le customer si besoin au chargement du composant ou au changement de l'id
     useEffect(() => {
         if (id !== "new") {
+            setLoading(true);
             setEditing(true);
             fetchCustomer(id);
         }
@@ -55,7 +58,7 @@ const CustomerPage = ({ match, history }) => {
 
         try {
             setErrors({});
-            
+
             if (editing) {
                 await CustomersAPI.updateCustomer(id, customer);
                 toast.success("Le client à bien été modifié");
@@ -69,7 +72,7 @@ const CustomerPage = ({ match, history }) => {
 
             if (violations) {
                 const apiErrors = {};
-                violations.forEach(({propertyPath, message}) => {
+                violations.forEach(({ propertyPath, message }) => {
                     apiErrors[propertyPath] = message;
                 });
                 setErrors(apiErrors);
@@ -82,7 +85,9 @@ const CustomerPage = ({ match, history }) => {
         <>
             {(!editing && <h1>Création d'un client</h1>) || (<h1>Modification du client</h1>)}
 
-            <form onSubmit={handleSubmit}>
+            {loading && <FormContentLoader />}
+
+            {!loading && <form onSubmit={handleSubmit}>
                 <Field name="lastName" label="Nom" placeholder="Nom du client" value={customer.lastName} onChange={handleChange} error={errors.lastName} />
                 <Field name="firstName" label="Prénom" placeholder="Prénom du client" value={customer.firstName} onChange={handleChange} error={errors.firstName} />
                 <Field name="email" label="Email" placeholder="Adresse email du client" value={customer.email} onChange={handleChange} error={errors.email} />
@@ -92,7 +97,7 @@ const CustomerPage = ({ match, history }) => {
                     <button type="submit" className="btn btn-success">Enregistrer</button>
                     <Link to="/customers" className="btn btn-primary ml-1">Retour à la liste</Link>
                 </div>
-            </form>
+            </form>}
         </>
     );
 }
