@@ -48,7 +48,8 @@ function deleteCustomer(id) {
 }
 
 function updateCustomer(id, customer) {
-    axios.put(CUSTOMERS_API + "/" + id, customer)
+    return axios
+        .put(CUSTOMERS_API + "/" + id, customer)
         .then(async response => {
             const cachedCustomers = await Cache.get("customers");
             const cachedCustomer = await Cache.get("customers." + id);
@@ -66,7 +67,8 @@ function updateCustomer(id, customer) {
 }
 
 function createCustomer(customer) {
-    axios.post(CUSTOMERS_API, customer)
+    return axios
+        .post(CUSTOMERS_API, customer)
         .then(async response => {
             const cachedCustomers = await Cache.get("customers");
 
@@ -74,7 +76,7 @@ function createCustomer(customer) {
                 Cache.set("customers", [...cachedCustomers, response.data]);
             }
 
-            return response;;
+            return response;
         });
 }
 
